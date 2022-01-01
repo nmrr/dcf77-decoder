@@ -137,7 +137,7 @@ void dcf77decode(int * outputBitArray, bool showArray)
         {
             if (!checkParity(outputBitArray, 21, 27, outputBitArray[28]))
             {
-                cout << "Bad parity for minutes" << endl;
+                cerr << "Bad parity for minutes" << endl;
                 return;
             }
 
@@ -145,7 +145,7 @@ void dcf77decode(int * outputBitArray, bool showArray)
 
             if (!checkParity(outputBitArray, 29, 34, outputBitArray[35]))
             {
-                cout << "Bad parity for hours" << endl;
+                cerr << "Bad parity for hours" << endl;
                 return;
             }
 
@@ -153,7 +153,7 @@ void dcf77decode(int * outputBitArray, bool showArray)
 
             if (!checkParity(outputBitArray, 36, 57, outputBitArray[58]))
             {
-                cout << "Bad parity for the date" << endl;
+                cerr << "Bad parity for the date" << endl;
                 return;
             }
 
@@ -164,9 +164,9 @@ void dcf77decode(int * outputBitArray, bool showArray)
 
             cout << year << "/" << (month < 10 ? "0" : "") << month << "/" << (day < 10 ? "0" : "") << day << " (" << getDayNameDCF(dayweek) << ") - " << (hour < 10 ? "0" : "")  << hour << ":" << (minute < 10 ? "0" : "") << minute << ((outputBitArray[17] == 0) ? " UTC+1" : " UTC+2") << (outputBitArray[19] == 1 ? "- A leap second will be added at the end of this hour" : "") << endl;
         }
-        else cout << "Unable to read to determine time offset" << endl;
+        else cerr << "Unable to read to determine time offset" << endl;
     }
-    else cout << "Bit 0 and bit 20 must be equal to 1" << endl;
+    else cerr << "Bit 0 and bit 20 must be equal to 1" << endl;
 }
 
 int main(int argc, char **argv)
@@ -343,7 +343,7 @@ int main(int argc, char **argv)
                         else if (time >= 0.18 && time <= 0.22) dcf77Array[dcf77Position++] = 1;
                         else
                         {
-                            cout << "Error during reading data (" << dcf77Position << ")" << endl;
+                            cerr << "Error during reading data (" << dcf77Position << ")" << endl;
                             dcf77ReadData = false;
                         }
 
@@ -374,7 +374,7 @@ int main(int argc, char **argv)
     }
     else
     {
-        cout << "Cannot open the file" << endl;
+        cerr << "Cannot open the file" << endl;
     }
 
     return 0;
