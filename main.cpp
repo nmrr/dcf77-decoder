@@ -133,7 +133,7 @@ void dcf77decode(int * outputBitArray, bool showArray)
 
     if (outputBitArray[0] == 0 && outputBitArray[20] == 1)
     {
-        if (outputBitArray[17] ^ outputBitArray[18])
+        if ((outputBitArray[17] ^ outputBitArray[18]) == 1)
         {
             if (!checkParity(outputBitArray, 21, 27, outputBitArray[28]))
             {
@@ -162,9 +162,9 @@ void dcf77decode(int * outputBitArray, bool showArray)
             int month = outputBitArray[45] + 2*outputBitArray[46] + 4*outputBitArray[47] + 8*outputBitArray[48] + 10*outputBitArray[49];
             int year = 2000 + outputBitArray[50] + 2*outputBitArray[51] + 4*outputBitArray[52] + 8*outputBitArray[53] + 10*outputBitArray[54] + 20*outputBitArray[55] + 40*outputBitArray[56] + 80*outputBitArray[57];
 
-            cout << year << "/" << (month < 10 ? "0" : "") << month << "/" << (day < 10 ? "0" : "") << day << " (" << getDayNameDCF(dayweek) << ") - " << (hour < 10 ? "0" : "")  << hour << ":" << (minute < 10 ? "0" : "") << minute << ((outputBitArray[17] == 0) ? " UTC+1" : " UTC+2") << (outputBitArray[19] == 1 ? "- A leap second will be added at the end of this hour" : "") << endl;
+            cout << year << "/" << (month < 10 ? "0" : "") << month << "/" << (day < 10 ? "0" : "") << day << " (" << getDayNameDCF(dayweek) << ") - " << (hour < 10 ? "0" : "")  << hour << ":" << (minute < 10 ? "0" : "") << minute << ((outputBitArray[17] == 0) ? " UTC+1" : " UTC+2") << (outputBitArray[19] == 1 ? " - A leap second will be added at the end of this hour" : "") << endl;
         }
-        else cerr << "Unable to read to determine time offset" << endl;
+        else cerr << "Unable to determine UTC offset" << endl;
     }
     else cerr << "Bit 0 and bit 20 must be equal to 1" << endl;
 }
@@ -176,9 +176,9 @@ int main(int argc, char **argv)
         cout << "<float32 wave file> <optional : \"1\" to display decoded values>" << endl;
         exit(1);
     }
-    
+
     string fileName = string(argv[1]);
-    
+
     bool showOutput = false;
     if (argc > 2) showOutput = (string(argv[2]) == "1" ? true : false);
 
@@ -199,7 +199,7 @@ int main(int argc, char **argv)
             int32_t cksize = charArraytoInt32(buffer[40], buffer[41], buffer[42], buffer[43]);
             int32_t dwSampleLength = charArraytoInt32(buffer[44], buffer[45], buffer[46], buffer[47]);
             size_t dataPosition = fileSize - cksize*dwSampleLength;
-            
+
             // DUMB FLOAT32 WAVE FILE DETECTOR
             if (buffer[0] == 'R' && buffer[1] == 'I' && buffer[2] == 'F' && buffer[3] == 'F' && buffer[8] == 'W' && buffer[9] == 'A' && buffer[10] == 'V' && buffer[11] == 'E' && buffer[12] == 'f' && buffer[13] == 'm' && buffer[14] == 't' && buffer[15] == ' ' && format == 3 && channel == 1 && sampleRate > 0 && dataPosition > 0 && cksize == 4)
             {
@@ -225,7 +225,7 @@ int main(int argc, char **argv)
                 // LOW-PASS FILTER
                 int32_t lowPassSamples = sampleRate/480;
                 if (lowPassSamples < 10) lowPassSamples = 10;
-                
+
                 bool end = false;
                 for (int32_t i=0; i<dwSampleLength; i++)
                 {
@@ -321,7 +321,7 @@ int main(int argc, char **argv)
                         if (arrayFloat[i] < minimum) minimum = arrayFloat[i];
                     }
                 }
-                
+
                 // EVENT DECODER
                 int dcf77Array[59];
                 uint32_t dcf77Position = 0;
@@ -368,7 +368,6 @@ int main(int argc, char **argv)
         {
             cerr << "Not a wave file" << endl;
         }
-
 
         file.close();
     }
